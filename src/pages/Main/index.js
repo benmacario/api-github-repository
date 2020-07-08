@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import { FaGithubAlt, FaPlus, FaSpinner } from 'react-icons/fa';
-import { Container, Form, SubmitButton } from './style';
+import { Container, Form, SubmitButton, List } from './style';
 
 import api from '../../services/api';
 
@@ -9,7 +9,7 @@ export default class Main extends Component {
   // state serve para guardar o estado da aplicação //
   state = {
     newRepository: '',
-    repositorys: [],
+    repositories: [],
     loading: false,
   };
 
@@ -22,7 +22,7 @@ export default class Main extends Component {
 
     this.setState({ loading: true });
 
-    const { newRepository, repositorys } = this.state;
+    const { newRepository, repositories } = this.state;
 
     const response = await api.get(`${newRepository}`);
 
@@ -31,7 +31,7 @@ export default class Main extends Component {
     };
 
     this.setState({
-      repositorys: [...repositorys, data.name],
+      repositories: [...repositories, data],
       newRepository: '',
       loading: false,
     });
@@ -40,7 +40,7 @@ export default class Main extends Component {
   };
 
   render() {
-    const { newRepository, loading } = this.state;
+    const { newRepository, repositories, loading } = this.state;
 
     return (
       <Container>
@@ -63,6 +63,14 @@ export default class Main extends Component {
             )}
           </SubmitButton>
         </Form>
+        <List>
+          {repositories.map((repository) => (
+            <li key={repository.name}>
+              <span>{repository.name}</span>
+              <a href="#">Detalhes</a>
+            </li>
+          ))}
+        </List>
       </Container>
     );
   }
