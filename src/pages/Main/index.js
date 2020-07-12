@@ -12,6 +12,7 @@ export default class Main extends Component {
     newRepository: '',
     repositories: [],
     loading: false,
+    error: '#eee',
   };
 
   // Carregar os dados do localStorage
@@ -39,27 +40,35 @@ export default class Main extends Component {
   handleSubmit = async (e) => {
     e.preventDefault();
 
-    this.setState({ loading: true });
+    try {
+      this.setState({ loading: true, error: '#eee' });
 
-    const { newRepository, repositories } = this.state;
+      const { newRepository, repositories } = this.state;
 
-    const response = await api.get(`${newRepository}`);
+      const repoDuplication = repositories.find(
+        (r) => r.name === newRepository
+      );
 
-    const data = {
-      name: response.data.full_name,
-    };
+      if (repoDuplication) throw new 'Repositórios duplicados'();
 
-    this.setState({
-      repositories: [...repositories, data],
-      newRepository: '',
-      loading: false,
-    });
+      const response = await api.get(`${newRepository}`);
 
-    // console.log(this.state.repository);
+      const data = {
+        name: response.data.full_name,
+      };
+
+      this.setState({
+        repositories: [...repositories, data],
+        newRepository: '',
+        loading: false,
+      });
+    } catch (err) {
+      this.setState({ loading: false, error: '#dc3545' });
+    }
   };
 
   render() {
-    const { newRepository, repositories, loading } = this.state;
+    const { newRepository, repositories, loading, error } = this.state;
 
     return (
       <Container>
@@ -73,6 +82,7 @@ export default class Main extends Component {
             placeholder="Adicionar repositório"
             value={newRepository}
             onChange={this.handleInputChange}
+            style={{ borderColor: error }} // error
           />
           <SubmitButton loading={loading}>
             {loading ? (
