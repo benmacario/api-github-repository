@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
+import { FaArrowRight, FaArrowLeft } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 
 import Container from '../../components/Container';
-import { Loading, Owner, IssueList, IssueFilter } from './style';
+import { Loading, Owner, IssueList, IssueFilter, PageActions } from './style';
 
 export default class Repository extends Component {
   static propTypes = {
@@ -73,6 +74,15 @@ export default class Repository extends Component {
     this.loadIssue();
   };
 
+  handleClickPage = async (action) => {
+    const { page } = this.state;
+    await this.setState({
+      page: action === 'back' ? page - 1 : page + 1,
+    });
+
+    this.loadIssue();
+  };
+
   render() {
     const {
       repository,
@@ -80,7 +90,7 @@ export default class Repository extends Component {
       loading,
       filters,
       filterIndex,
-      // page,
+      page,
     } = this.state;
 
     if (loading) {
@@ -127,6 +137,19 @@ export default class Repository extends Component {
               </div>
             </li>
           ))}
+          <PageActions>
+            <button
+              type="button"
+              disabled={page < 2}
+              onClick={() => this.handleClickPage('back')}
+            >
+              <FaArrowLeft />
+            </button>
+            <span>{page}</span>
+            <button type="button" onClick={() => this.handleClickPage('next')}>
+              <FaArrowRight />
+            </button>
+          </PageActions>
         </IssueList>
       </Container>
     );
