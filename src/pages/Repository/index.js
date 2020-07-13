@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import api from '../../services/api';
 
 import Container from '../../components/Container';
+import Headers from '../../components/Header';
 import { Loading, Owner, IssueList, IssueFilter, PageActions } from './style';
 
 export default class Repository extends Component {
@@ -98,60 +99,69 @@ export default class Repository extends Component {
     }
 
     return (
-      <Container>
-        <Owner>
-          <Link to="/">Voltar aos repositórios</Link>
-          <img src={repository.owner.avatar_url} alt={repository.owner.login} />
-          <h1>{repository.name}</h1>
-          <p>{repository.description}</p>
-        </Owner>
+      <>
+        <Headers />
+        <Container>
+          <Owner>
+            <Link to="/">Voltar aos repositórios</Link>
+            <img
+              src={repository.owner.avatar_url}
+              alt={repository.owner.login}
+            />
+            <h1>{repository.name}</h1>
+            <p>{repository.description}</p>
+          </Owner>
 
-        <IssueList>
-          <IssueFilter active={filterIndex}>
-            {filters.map((filter, index) => (
+          <IssueList>
+            <IssueFilter active={filterIndex}>
+              {filters.map((filter, index) => (
+                <button
+                  type="button"
+                  key={filter.label}
+                  onClick={() => this.handleFilterClick(index)}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </IssueFilter>
+            {issues.map((issue) => (
+              <li key={String(issue.id)}>
+                <img src={issue.user.avatar_url} alt={issue.user.login} />
+                <div>
+                  <strong>
+                    <a href={issue.html_url}>{issue.title}</a>
+                    {issue.labels.map((label) => (
+                      <span
+                        key={String(label.id)}
+                        style={{ backgroundColor: `#${label.color}` }}
+                      >
+                        {label.name}
+                      </span>
+                    ))}
+                  </strong>
+                  <p>{issue.user.login}</p>
+                </div>
+              </li>
+            ))}
+            <PageActions>
               <button
                 type="button"
-                key={filter.label}
-                onClick={() => this.handleFilterClick(index)}
+                disabled={page < 2}
+                onClick={() => this.handleClickPage('back')}
               >
-                {filter.label}
+                <FaArrowLeft />
               </button>
-            ))}
-          </IssueFilter>
-          {issues.map((issue) => (
-            <li key={String(issue.id)}>
-              <img src={issue.user.avatar_url} alt={issue.user.login} />
-              <div>
-                <strong>
-                  <a href={issue.html_url}>{issue.title}</a>
-                  {issue.labels.map((label) => (
-                    <span
-                      key={String(label.id)}
-                      style={{ backgroundColor: `#${label.color}` }}
-                    >
-                      {label.name}
-                    </span>
-                  ))}
-                </strong>
-                <p>{issue.user.login}</p>
-              </div>
-            </li>
-          ))}
-          <PageActions>
-            <button
-              type="button"
-              disabled={page < 2}
-              onClick={() => this.handleClickPage('back')}
-            >
-              <FaArrowLeft />
-            </button>
-            <span>{page}</span>
-            <button type="button" onClick={() => this.handleClickPage('next')}>
-              <FaArrowRight />
-            </button>
-          </PageActions>
-        </IssueList>
-      </Container>
+              <span>{page}</span>
+              <button
+                type="button"
+                onClick={() => this.handleClickPage('next')}
+              >
+                <FaArrowRight />
+              </button>
+            </PageActions>
+          </IssueList>
+        </Container>
+      </>
     );
   }
 }
