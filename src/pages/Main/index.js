@@ -40,16 +40,18 @@ export default class Main extends Component {
   handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      this.setState({ loading: true, error: '#eee' });
+    this.setState({ loading: true, error: '#eee' });
 
+    try {
       const { newRepository, repositories } = this.state;
+
+      if (newRepository === '') throw new Error('Campo de pesquisa em branco');
 
       const repoDuplication = repositories.find(
         (r) => r.name === newRepository
       );
 
-      if (repoDuplication) throw new 'Repositórios duplicados'();
+      if (repoDuplication) throw new Error('Repositórios duplicados');
 
       const response = await api.get(`${newRepository}`);
 

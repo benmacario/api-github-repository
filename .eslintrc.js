@@ -1,3 +1,5 @@
+const { string } = require("prop-types");
+
 module.exports = {
   env: {
     browser: true,
@@ -18,5 +20,9 @@ module.exports = {
     'react/state-in-constructor': [2, "never"],
     'react/jsx-filename-extension': ['warn', { extensions: ['.jsx', '.js'] }],
     'import/prefer-default-export': 'off',
+    "react/static-property-placement": [
+      "error",
+      "static public field"
+    ],
   },
 };
